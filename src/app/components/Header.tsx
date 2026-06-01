@@ -13,10 +13,11 @@ import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface HeaderProps {
   selectedCity: string;
+  isLocationModalOpen?: boolean;
   onOpenLocationModal: () => void;
 }
 
-export function Header({ selectedCity, onOpenLocationModal }: HeaderProps) {
+export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocationModal }: HeaderProps) {
   const { itemCount } = useCart();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -179,7 +180,7 @@ export function Header({ selectedCity, onOpenLocationModal }: HeaderProps) {
               <span className="text-base leading-[1.5] whitespace-nowrap max-w-[132px] truncate">
                 {selectedCity || 'Ubicación'}
               </span>
-              <ChevronDown className="w-5 h-5 flex-shrink-0" />
+              <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform ${isLocationModalOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {/* Cart Button */}

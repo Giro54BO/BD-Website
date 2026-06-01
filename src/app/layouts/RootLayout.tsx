@@ -38,7 +38,7 @@ export function RootLayout() {
       </a>
 
       <TopBanner />
-      <Header selectedCity={selectedCity} onOpenLocationModal={() => setIsLocationModalOpen(true)} />
+      <Header selectedCity={selectedCity} isLocationModalOpen={isLocationModalOpen} onOpenLocationModal={() => setIsLocationModalOpen(true)} />
       <SecondaryNav />
 
       <main id="main-content" className="flex-1">

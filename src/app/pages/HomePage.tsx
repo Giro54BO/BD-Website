@@ -28,59 +28,59 @@ export function HomePage() {
   ];
 
   return (
-    <>
+    <div className="bg-background pb-12">
       {/* Banner Slider */}
       <BannerSlider />
 
       {/* Features */}
-      <section className="py-16 border-b border-border">
+      <section className="py-16 border-b border-border/40">
         <div className="max-w-[1440px] mx-auto px-8 lg:px-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="block w-12 h-12" fill="none" viewBox="0 0 21.3075 15.0577">
-                  <path d={svgPathsTruck.p21ffd200} fill="var(--color-primary)" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex items-center gap-5 p-5 bg-card border border-border/40 rounded-2xl shadow-sm hover:shadow-[0_12px_30px_rgba(48,44,103,0.04)] hover:border-primary/20 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/5 group-hover:bg-primary/10 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                <svg className="block w-9 h-9" fill="none" viewBox="0 0 21.3075 15.0577">
+                  <path d={svgPathsTruck.p21ffd200} fill="currentColor" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground mb-1">Envío rápido</h3>
-                <p className="text-muted-foreground">A todo el país</p>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">Envío rápido</h3>
+                <p className="text-sm text-muted-foreground">A todo el país</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="block w-12 h-12" fill="none" viewBox="0 0 20.6535 19.7305">
-                  <path d={svgPathsTruck.p36ce9c00} fill="var(--color-primary)" />
+            <div className="flex items-center gap-5 p-5 bg-card border border-border/40 rounded-2xl shadow-sm hover:shadow-[0_12px_30px_rgba(48,44,103,0.04)] hover:border-primary/20 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/5 group-hover:bg-primary/10 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                <svg className="block w-9 h-9" fill="none" viewBox="0 0 20.6535 19.7305">
+                  <path d={svgPathsTruck.p36ce9c00} fill="currentColor" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground mb-1">Garantía</h3>
-                <p className="text-muted-foreground">En todos los productos</p>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">Garantía</h3>
+                <p className="text-sm text-muted-foreground">En todos los productos</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="block w-12 h-12" fill="none" viewBox="0 0 15 17.3538">
-                  <path d={svgPathsClock.p1f772b00} fill="var(--color-primary)" />
+            <div className="flex items-center gap-5 p-5 bg-card border border-border/40 rounded-2xl shadow-sm hover:shadow-[0_12px_30px_rgba(48,44,103,0.04)] hover:border-primary/20 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/5 group-hover:bg-primary/10 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                <svg className="block w-9 h-9" fill="none" viewBox="0 0 15 17.3538">
+                  <path d={svgPathsClock.p1f772b00} fill="currentColor" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground mb-1">Atención 24/7</h3>
-                <p className="text-muted-foreground">Soporte en línea</p>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">Atención 24/7</h3>
+                <p className="text-sm text-muted-foreground">Soporte en línea</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 bg-muted rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="block w-12 h-12" fill="none" viewBox="0 0 19 19">
-                  <path d={svgPathsTruck.p2af23f80} fill="var(--color-primary)" />
+            <div className="flex items-center gap-5 p-5 bg-card border border-border/40 rounded-2xl shadow-sm hover:shadow-[0_12px_30px_rgba(48,44,103,0.04)] hover:border-primary/20 transition-all duration-300 group">
+              <div className="w-16 h-16 bg-primary/5 group-hover:bg-primary/10 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                <svg className="block w-9 h-9" fill="none" viewBox="0 0 19 19">
+                  <path d={svgPathsTruck.p2af23f80} fill="currentColor" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-foreground mb-1">30+ Años</h3>
-                <p className="text-muted-foreground">De experiencia</p>
+                <h3 className="text-lg font-bold text-foreground mb-0.5">30+ Años</h3>
+                <p className="text-sm text-muted-foreground">De experiencia</p>
               </div>
             </div>
           </div>
@@ -88,31 +88,38 @@ export function HomePage() {
       </section>
 
       {/* Categories */}
-      <section className="py-16 bg-background">
+      <section className="py-20 bg-background">
         <div className="max-w-[1440px] mx-auto px-8 lg:px-16">
-          <h2 className="text-3xl font-bold text-foreground mb-8">Negocios</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="mb-10">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-accent mb-2 block">Explora por área</span>
+            <h2 className="text-4xl font-extrabold text-foreground tracking-tight">Negocios Especializados</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {categories.map((category) => (
               <Link
                 key={category.id}
                 to={getCategoryPath(category.name)}
-                className="group bg-muted rounded-xl p-6 hover:shadow-lg transition-all"
+                className="group bg-card border border-border/50 rounded-2xl p-5 hover:shadow-[0_24px_48px_rgba(48,44,103,0.06)] hover:-translate-y-1.5 transition-all duration-300 block"
               >
                 <div
-                  className="h-[150px] rounded-lg mb-4 overflow-hidden"
+                  className="h-[160px] rounded-xl mb-4 overflow-hidden shadow-inner flex items-center justify-center"
                   style={{ background: category.gradient }}
                 >
-                  <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center p-6">
                     <ImageWithFallback
                       src={categoryImages[category.id] || category.image}
                       alt={category.name}
-                      className="w-24 h-24 object-contain opacity-80"
+                      className="w-24 h-24 object-contain transition-transform duration-500 ease-out group-hover:scale-110 drop-shadow-lg"
                     />
                   </div>
                 </div>
-                <h3 className="text-xl text-foreground group-hover:text-primary transition-colors font-bold">
+                <h3 className="text-lg text-foreground group-hover:text-primary font-bold tracking-tight transition-colors">
                   {getCategoryLabel(category.name)}
                 </h3>
+                <span className="mt-2 block text-xs font-semibold text-muted-foreground/80 group-hover:text-primary/80 transition-colors uppercase tracking-wider">
+                  Ver catálogo &rarr;
+                </span>
               </Link>
             ))}
           </div>
@@ -120,16 +127,19 @@ export function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 bg-muted">
+      <section className="py-20 bg-muted/30 border-y border-border/30">
         <div className="max-w-[1440px] mx-auto px-8 lg:px-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Productos destacados</h2>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-accent mb-2 block">Selección premium</span>
+              <h2 className="text-4xl font-extrabold text-foreground tracking-tight">Productos destacados</h2>
+            </div>
             <Link
               to="/search"
-              className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium"
+              className="flex items-center gap-2 text-primary hover:text-accent font-bold group/link transition-colors"
             >
-              Ver todos los productos
-              <ArrowRight className="w-5 h-5" />
+              <span>Ver todos los productos</span>
+              <ArrowRight className="w-5 h-5 group-hover/link:translate-x-1.5 transition-transform" />
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -141,28 +151,31 @@ export function HomePage() {
       </section>
 
       {/* Popular Brands */}
-      <section className="py-16 bg-background">
+      <section className="py-20 bg-background">
         <div className="max-w-[1440px] mx-auto px-8 lg:px-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Marcas populares</h2>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-accent mb-2 block">Fabricantes líderes</span>
+              <h2 className="text-4xl font-extrabold text-foreground tracking-tight">Marcas populares</h2>
+            </div>
             <Link
               to="/search"
-              className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium"
+              className="flex items-center gap-2 text-primary hover:text-accent font-bold group/link transition-colors"
             >
-              Ver todas
-              <ArrowRight className="w-5 h-5" />
+              <span>Ver todas</span>
+              <ArrowRight className="w-5 h-5 group-hover/link:translate-x-1.5 transition-transform" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
             {brands.map((brand) => (
               <div
                 key={brand.name}
-                className="bg-card border border-border rounded-xl p-6 flex items-center justify-center hover:shadow-md transition-shadow"
+                className="bg-card border border-border/50 rounded-2xl p-5 flex items-center justify-center shadow-sm hover:shadow-[0_16px_36px_rgba(48,44,103,0.06)] hover:border-primary/20 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
                 <ImageWithFallback
                   src={brand.logo}
                   alt={brand.name}
-                  className="w-24 h-24 object-contain"
+                  className="w-24 h-16 object-contain"
                 />
               </div>
             ))}
@@ -171,17 +184,29 @@ export function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary text-white">
-        <div className="max-w-[1440px] mx-auto px-8 lg:px-16 text-center">
-          <h2 className="text-3xl font-bold mb-4">Estamos listo para ayudarte</h2>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            ¿No sabes cómo comprar con nosotros? Revisa nuestras preguntas frecuentes o contáctanos directamente.
-          </p>
-          <button className="bg-white text-primary hover:bg-white/90 px-8 py-4 rounded-lg font-medium transition-colors">
-            Conoce más
-          </button>
+      <section className="max-w-[1440px] mx-auto px-8 lg:px-16 py-12">
+        <div className="relative py-20 px-8 md:px-16 bg-gradient-to-tr from-primary via-primary/95 to-primary/90 text-white overflow-hidden rounded-3xl shadow-xl shadow-primary/10">
+          {/* Background ambient glow */}
+          <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-accent/25 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute -bottom-20 -left-20 w-[300px] h-[300px] bg-primary-foreground/5 rounded-full blur-[80px] pointer-events-none" />
+          
+          <div className="relative max-w-3xl mx-auto text-center z-10">
+            <span className="text-xs font-bold uppercase tracking-widest text-accent mb-3 block">¿Tienes dudas o necesitas asesoría?</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight leading-tight">Estamos listos para ayudarte</h2>
+            <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
+              ¿No sabes cómo comprar con nosotros? Revisa nuestro centro de soporte completo o ponte en contacto con nuestro equipo experto para una atención personalizada.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="w-full sm:w-auto bg-white text-primary hover:bg-white/95 px-8 py-4 rounded-xl font-bold transition-all duration-200 active:scale-[0.98] shadow-lg shadow-black/10 cursor-pointer">
+                Conoce más
+              </button>
+              <Link to="/help-center" className="w-full sm:w-auto text-white hover:underline font-bold py-3 px-6 text-center">
+                Centro de Ayuda
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
