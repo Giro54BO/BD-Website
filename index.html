@@ -9,7 +9,25 @@
       <meta name="description" content="This web application offers a user-friendly interface for clients to view and interact with prototypes, enhancing collaboration and feedback during project development." />
       <meta name="robots" content="noindex, nofollow" />
       <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
+      <!-- Start Single Page Apps for GitHub Pages -->
+      <script type="text/javascript">
+        (function(l) {
+          if (l.search[1] === 'p') {
+            var decoded = l.search.slice(1).split('&').map(function(s) {
+              return s.replace(/~and~/g, '&')
+            }).filter(function(s) {
+              return s.slice(0, 2) === 'p='
+            })[0];
+            if (decoded) {
+              window.history.replaceState(null, null,
+                l.pathname.slice(0, -1) + decoded.slice(2) +
+                (l.hash || '')
+              );
+            }
+          }
+        }(window.location))
+      </script>
+      <!-- End Single Page Apps for GitHub Pages -->
     </head>
 
     <body>
