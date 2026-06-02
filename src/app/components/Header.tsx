@@ -27,6 +27,16 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const categoriesDropdownRef = useRef<HTMLDivElement>(null);
+  const prevItemCountRef = useRef(itemCount);
+  const [badgeAnimKey, setBadgeAnimKey] = useState(0);
+
+  // Trigger slot-machine bounce whenever cart count increases
+  useEffect(() => {
+    if (itemCount > prevItemCountRef.current) {
+      setBadgeAnimKey(k => k + 1);
+    }
+    prevItemCountRef.current = itemCount;
+  }, [itemCount]);
 
   // Filter products based on search query
   const searchSuggestions = searchQuery.trim().length > 0
@@ -99,6 +109,7 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
   }, [categoriesDropdownOpen]);
 
   return (
+    <>
     <header className="bg-background sticky top-0 z-50 relative">
       {/* Desktop Header */}
       <div className="hidden lg:block bg-background" ref={categoriesDropdownRef}>
@@ -206,8 +217,13 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
                   </svg>
                 </div>
                 {itemCount > 0 && (
-                  <div className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium">
-                    {itemCount}
+                  <div className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium overflow-hidden">
+                    <span
+                      key={badgeAnimKey}
+                      style={{ display: 'inline-block', animation: badgeAnimKey > 0 ? 'badgeSlotBounce 0.4s cubic-bezier(0.34,1.56,0.64,1) both' : 'none' }}
+                    >
+                      {itemCount}
+                    </span>
                   </div>
                 )}
               </div>
@@ -452,8 +468,13 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
             />
           </svg>
           {itemCount > 0 && (
-            <div className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
-              {itemCount}
+            <div className="absolute -top-1 -right-1 bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium overflow-hidden">
+              <span
+                key={badgeAnimKey}
+                style={{ display: 'inline-block', animation: badgeAnimKey > 0 ? 'badgeSlotBounce 0.4s cubic-bezier(0.34,1.56,0.64,1) both' : 'none' }}
+              >
+                {itemCount}
+              </span>
             </div>
           )}
         </Link>
@@ -552,7 +573,7 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
                           {product.brand} · {product.code}
                         </p>
                         <p className="text-sm lg:text-base text-primary font-bold mt-1">
-                          ${product.price.toFixed(2)}
+                          Bs. {product.price.toFixed(2)}
                         </p>
                       </div>
                     </button>
@@ -598,5 +619,14 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
         </div>
       )}
     </header>
+    <style>{`
+      @keyframes badgeSlotBounce {
+        0%   { transform: translateY(120%) scale(0.6); opacity: 0; }
+        55%  { transform: translateY(-25%) scale(1.15); opacity: 1; }
+        80%  { transform: translateY(8%) scale(0.95); }
+        100% { transform: translateY(0%) scale(1); opacity: 1; }
+      }
+    `}</style>
+    </>
   );
 }

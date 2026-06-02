@@ -17,5 +17,5 @@ export function getCategoryLabel(categoryName: string): string {
 }
 
 export function getCategoryPath(categoryName: string): string {
-  return categoryName === "Autopartes" ? "/search" : `/category/${categoryName.toLowerCase()}`;
+  return `/category/${categoryName.toLowerCase()}`;
 }

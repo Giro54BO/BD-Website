@@ -12,6 +12,7 @@ export function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews'>('description');
   const [selectedImage, setSelectedImage] = useState(0);
+  const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success'>('idle');
 
   const product = products.find(p => p.id === id);
 
@@ -33,22 +34,28 @@ export function ProductDetailPage() {
   ).slice(0, 3);
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      code: product.code,
-      category: product.category,
-      brand: product.brand,
-    }, quantity);
-    // Show toast or notification
-    alert(`${quantity} ${product.name} agregado al carrito`);
+    if (buttonState !== 'idle') return;
+    setButtonState('loading');
+    // Simulate brief async delay then add to cart
+    setTimeout(() => {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        code: product.code,
+        category: product.category,
+        brand: product.brand,
+      }, quantity);
+      setButtonState('success');
+      setTimeout(() => setButtonState('idle'), 1200);
+    }, 700);
   };
 
   const images = [product.image, product.image]; // In real app, product would have multiple images
 
   return (
+    <>
     <div className="max-w-[1440px] mx-auto px-8 lg:px-16 py-8">
       {/* Breadcrumb */}
       <div className="text-sm text-muted-foreground mb-6">
@@ -140,11 +147,11 @@ export function ProductDetailPage() {
           {/* Price */}
           <div className="flex items-end gap-4 mb-8">
             <p className="text-5xl font-medium text-foreground">
-              ${product.price.toFixed(2)}
+              Bs. {product.price.toFixed(2)}
             </p>
             {product.originalPrice && (
               <p className="text-2xl text-muted-foreground line-through mb-2">
-                ${product.originalPrice.toFixed(2)}
+                Bs. {product.originalPrice.toFixed(2)}
               </p>
             )}
           </div>
@@ -193,17 +200,63 @@ export function ProductDetailPage() {
                 Subtotal
               </label>
               <p className="text-3xl font-medium text-foreground">
-                ${(product.price * quantity).toFixed(2)}
+                Bs. {(product.price * quantity).toFixed(2)}
               </p>
             </div>
           </div>
 
           <button
             onClick={handleAddToCart}
-            className="w-full bg-primary text-white py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors text-lg font-medium"
+            disabled={buttonState !== 'idle'}
+            className="w-full bg-primary text-white py-4 rounded-lg flex items-center justify-center gap-2 transition-all text-lg font-medium overflow-hidden"
+            style={{
+              opacity: buttonState !== 'idle' ? 0.95 : 1,
+              transform: buttonState === 'success' ? 'scale(1.01)' : 'scale(1)',
+              background: buttonState === 'success' ? 'var(--color-chart-4, #22c55e)' : undefined,
+              transition: 'background 0.3s ease, transform 0.15s ease',
+            }}
           >
-            Agregar al carrito
-            <ShoppingCart className="w-6 h-6" />
+            {buttonState === 'idle' && (
+              <>
+                Agregar al carrito
+                <ShoppingCart className="w-6 h-6" />
+              </>
+            )}
+            {buttonState === 'loading' && (
+              <svg
+                className="w-6 h-6 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12" cy="12" r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+            )}
+            {buttonState === 'success' && (
+              <svg
+                className="w-7 h-7"
+                style={{ animation: 'cartCheckPop 0.35s cubic-bezier(0.34,1.56,0.64,1) both' }}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
           </button>
         </div>
       </div>
@@ -322,5 +375,13 @@ export function ProductDetailPage() {
         </div>
       )}
     </div>
+    <style>{`
+      @keyframes cartCheckPop {
+        0%   { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+        60%  { transform: scale(1.25) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+      }
+    `}</style>
+    </>
   );
 }

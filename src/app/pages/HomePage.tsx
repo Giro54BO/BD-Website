@@ -185,13 +185,13 @@ export function HomePage() {
 
       {/* CTA Section */}
       <section className="max-w-[1440px] mx-auto px-8 lg:px-16 py-12">
-        <div className="relative py-20 px-8 md:px-16 bg-gradient-to-tr from-primary via-primary/95 to-primary/90 text-white overflow-hidden rounded-3xl shadow-xl shadow-primary/10">
+        <div className="relative py-20 px-8 md:px-16 bg-gradient-to-tr from-[#262352] via-[#302c67] to-[#4a4691] text-white overflow-hidden rounded-3xl shadow-xl shadow-primary/10">
           {/* Background ambient glow */}
           <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-accent/25 rounded-full blur-[120px] pointer-events-none" />
           <div className="absolute -bottom-20 -left-20 w-[300px] h-[300px] bg-primary-foreground/5 rounded-full blur-[80px] pointer-events-none" />
           
           <div className="relative max-w-3xl mx-auto text-center z-10">
-            <span className="text-xs font-bold uppercase tracking-widest text-accent mb-3 block">¿Tienes dudas o necesitas asesoría?</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-white/95 mb-3 block">¿Tienes dudas o necesitas asesoría?</span>
             <h2 className="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight leading-tight">Estamos listos para ayudarte</h2>
             <p className="text-lg text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed">
               ¿No sabes cómo comprar con nosotros? Revisa nuestro centro de soporte completo o ponte en contacto con nuestro equipo experto para una atención personalizada.

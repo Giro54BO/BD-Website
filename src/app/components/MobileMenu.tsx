@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import svgPaths from '../../imports/svg-dfw5nz3jnq';
 import svgPathsHeader from '../../imports/svg-dzlm20prl5';
 import { categories } from '../data/mockData';
+import { getCategoryLabel, getCategoryPath } from '../data/categoryImages';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -134,11 +135,11 @@ export function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 {categories.map((category) => (
                   <Link
                     key={category.id}
-                    to={`/category/${category.name.toLowerCase()}`}
+                    to={getCategoryPath(category.name)}
                     onClick={onClose}
                     className="h-[52px] flex items-center text-base text-muted-foreground hover:text-primary transition-colors"
                   >
-                    {category.name}
+                    {getCategoryLabel(category.name)}
                   </Link>
                 ))}
               </div>

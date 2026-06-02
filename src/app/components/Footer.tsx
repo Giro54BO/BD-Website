@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import svgPaths from "../../imports/svg-z3h66sdv4u";
 import imgFooter from "figma:asset/618631a906a3f14879ebf268c012439e9a59550d.png";
 import { categories } from "../data/mockData";
+import { getCategoryLabel, getCategoryPath } from "../data/categoryImages";
 
 export function Footer() {
   return (
@@ -32,10 +33,10 @@ export function Footer() {
             {categories.slice(0, 3).map((category) => (
               <Link
                 key={category.id}
-                to={`/category/${category.name.toLowerCase()}`}
+                to={getCategoryPath(category.name)}
                 className="text-base text-muted-foreground hover:text-primary transition-colors"
               >
-                {category.name}
+                {getCategoryLabel(category.name)}
               </Link>
             ))}
             <Link
@@ -340,7 +341,7 @@ export function Footer() {
               <h3 className="text-2xl font-bold text-muted-foreground leading-[1.3]">Negocios</h3>
               <nav className="flex flex-col gap-6">
                 <Link
-                  to="/search"
+                  to={getCategoryPath("Autopartes")}
                   className="text-base text-muted-foreground hover:text-primary transition-colors leading-[1.5]"
                 >Autopartes BigDam</Link>
 
