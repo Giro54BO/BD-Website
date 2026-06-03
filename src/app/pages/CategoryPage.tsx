@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import {
   AlertCircle,
   ArrowRight,
@@ -49,15 +49,15 @@ const categoryBrands: Record<string, CategoryBrand[]> = {
     { name: 'Puma', mark: 'PUMA', tone: 'text-[#111111]' },
     { name: 'H&M', mark: 'H&M', tone: 'text-[#d6001c]' },
   ],
-  electrónica: [
-    { name: 'Samsung', mark: 'SAMSUNG', tone: 'text-[#1428a0]' },
-    { name: 'Apple', mark: 'Apple', tone: 'text-[#111111]' },
-    { name: 'Sony', mark: 'SONY', tone: 'text-[#111111]' },
-    { name: 'LG', mark: 'LG', tone: 'text-[#a50034]' },
-    { name: 'Lenovo', mark: 'Lenovo', tone: 'text-[#e2231a]' },
-    { name: 'Xiaomi', mark: 'mi', tone: 'text-[#ff6900]' },
+  electronica: [
+    { name: 'Apple', logo: 'https://logo.clearbit.com/apple.com' },
+    { name: 'Samsung', logo: 'https://logo.clearbit.com/samsung.com' },
+    { name: 'Nintendo', logo: 'https://logo.clearbit.com/nintendo.com' },
+    { name: 'HP', logo: 'https://logo.clearbit.com/hp.com' },
+    { name: 'Sony', logo: 'https://logo.clearbit.com/sony.com' },
+    { name: 'Lenovo', logo: 'https://logo.clearbit.com/lenovo.com' },
   ],
-  ferretería: [
+  ferreteria: [
     { name: 'Stanley', mark: 'STANLEY', tone: 'text-[#111111]' },
     { name: 'Bosch', mark: 'BOSCH', tone: 'text-[#e20015]' },
     { name: 'Makita', mark: 'Makita', tone: 'text-[#008a98]' },
@@ -77,17 +77,17 @@ const categoryBrands: Record<string, CategoryBrand[]> = {
 
 const categorySubcategories: Record<string, string[]> = {
   autopartes: ['Todos', 'Frenos', 'Motor', 'Suspensión', 'Filtros', 'Transmisión', 'Encendido', 'Refrigeración'],
-  electrónica: ['Todos', 'Computadoras', 'Electrodomésticos', 'Impresoras', 'Videojuegos', 'Parlantes', 'Celulares', 'Baterías'],
+  electronica: ['Todos', 'Computadoras', 'Electrodomésticos', 'Impresoras', 'Videojuegos', 'Parlantes', 'Celulares', 'Accesorios'],
   moda: ['Todos', 'Calzado', 'Chaquetas', 'Mochilas', 'Accesorios', 'Deportivo'],
-  ferretería: ['Todos', 'Herramientas eléctricas', 'Manuales', 'Tornillería', 'Pintura', 'Seguridad'],
+  ferreteria: ['Todos', 'Herramientas eléctricas', 'Manuales', 'Tornillería', 'Pintura', 'Seguridad'],
   hogar: ['Todos', 'Muebles', 'Iluminación', 'Cocina', 'Decoración', 'Organización'],
 };
 
 const heroCopy: Record<string, string> = {
   autopartes: 'Repuestos, filtros y componentes para encontrar la pieza correcta sin perder tiempo.',
-  electrónica: 'Tecnología, accesorios y dispositivos para renovar tu día con mejores equipos.',
+  electronica: 'Tecnología, accesorios y dispositivos para renovar tu día con mejores equipos.',
   moda: 'Prendas, calzado y accesorios con selección directa para uso diario.',
-  ferretería: 'Herramientas y soluciones para trabajos profesionales y proyectos de casa.',
+  ferreteria: 'Herramientas y soluciones para trabajos profesionales y proyectos de casa.',
   hogar: 'Muebles, iluminación y básicos para equipar espacios con intención.',
 };
 
@@ -97,6 +97,29 @@ const sortLabels: Record<SortOption, string> = {
   price_asc: 'Menor precio',
   price_desc: 'Mayor precio',
 };
+
+const sucursales = [
+  '2 de Agosto',
+  'Alto San Pedro',
+  'Arroyo Concepción',
+  'Casco Viejo',
+  'El Parí',
+  'El Torno',
+  'German Moreno',
+  'La Colorada',
+  'La Guardia',
+  'Los Lotes',
+  'Minero',
+  'Montero',
+  'Mutualista',
+  'Pampa de la Isla',
+  'Piraí',
+  'Plan 3000',
+  'San José',
+  'Satélite Norte',
+  'Villa 1º de Mayo',
+  'Yapacaní',
+];
 
 const vehicleBrands = ['Toyota', 'Nissan', 'Chevrolet', 'Ford', 'Hyundai', 'Kia', 'Honda'];
 const vehicleModels: Record<string, string[]> = {
@@ -133,9 +156,13 @@ function inferSubcategory(productName: string, categoryKey: string) {
   }
 
   if (categoryKey === 'electronica') {
-    if (name.includes('smartphone')) return 'Celulares';
-    if (name.includes('auricular')) return 'Parlantes';
-    if (name.includes('smartwatch')) return 'Baterías';
+    if (name.includes('smartphone') || name.includes('iphone') || name.includes('celular') || name.includes('movil')) return 'Celulares';
+    if (name.includes('auricular') || name.includes('parlante') || name.includes('speaker')) return 'Parlantes';
+    if (name.includes('smartwatch') || name.includes('watch') || name.includes('reloj')) return 'Accesorios';
+    if (name.includes('laptop') || name.includes('thinkpad') || name.includes('pavilion') || name.includes('macbook') || name.includes('computadora')) return 'Computadoras';
+    if (name.includes('tv') || name.includes('television') || name.includes('qled') || name.includes('oled') || name.includes('pantalla')) return 'Electrodomésticos';
+    if (name.includes('switch') || name.includes('consola') || name.includes('nintendo') || name.includes('gaming') || name.includes('playstation') || name.includes('xbox')) return 'Videojuegos';
+    if (name.includes('impresora') || name.includes('printer') || name.includes('pixma') || name.includes('canon')) return 'Impresoras';
     return 'Computadoras';
   }
 
@@ -164,6 +191,13 @@ function inferSubcategory(productName: string, categoryKey: string) {
 export function CategoryPage() {
   const { categoryName } = useParams<{ categoryName: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navState = location.state as {
+    initialSubcategory?: string;
+    initialBrand?: string;
+    initialSucursal?: string;
+  } | null;
+
   const decodedCategory = decodeURIComponent(categoryName || '');
   const categoryKey = normalize(decodedCategory);
 
@@ -174,8 +208,18 @@ export function CategoryPage() {
   const subcategories = categorySubcategories[categoryKey] || ['Todos'];
   const popularBrands = categoryBrands[categoryKey] || categoryBrands.autopartes;
 
-  const [selectedFilterBrands, setSelectedFilterBrands] = useState<string[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState('Todos');
+  const resultsSectionRef = useRef<HTMLElement | null>(null);
+
+  const [selectedFilterBrands, setSelectedFilterBrands] = useState<string[]>(
+    navState?.initialBrand ? [navState.initialBrand] : []
+  );
+  const [selectedSubcategory, setSelectedSubcategory] = useState(
+    navState?.initialSubcategory ?? 'Todos'
+  );
+  const [selectedSucursales, setSelectedSucursales] = useState<string[]>(
+    navState?.initialSucursal ? [navState.initialSucursal] : []
+  );
+  const [sucursalesExpanded, setSucursalesExpanded] = useState(false);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
   const [sortBy, setSortBy] = useState<SortOption>('relevance');
   const [sortOpen, setSortOpen] = useState(false);
@@ -186,10 +230,32 @@ export function CategoryPage() {
   const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
-  const resultsSectionRef = useRef<HTMLElement | null>(null);
+
+  // Scroll to results when arriving from mega menu with a pre-selected filter.
+  // Double-rAF ensures this runs after the RootLayout scroll-to-top and the
+  // browser's first paint, so our smooth scroll always wins.
+  useEffect(() => {
+    if (navState?.initialBrand || navState?.initialSubcategory || navState?.initialSucursal) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resultsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+  }, []);
+
+  const allCategoryProducts = useMemo(
+    () => products.filter((product) => normalize(product.category) === normalize(productCategory)),
+    [productCategory]
+  );
+
+  const sidebarBrands = useMemo(
+    () => Array.from(new Set(allCategoryProducts.map((p) => p.brand))).sort(),
+    [allCategoryProducts]
+  );
 
   const categoryProducts = useMemo(() => {
-    const categoryBase = products.filter((product) => normalize(product.category) === normalize(productCategory));
+    const categoryBase = allCategoryProducts;
 
     return categoryBase
       .filter((product) => {
@@ -216,6 +282,7 @@ export function CategoryPage() {
   const hasActiveFilters =
     selectedFilterBrands.length > 0 ||
     selectedSubcategory !== 'Todos' ||
+    selectedSucursales.length > 0 ||
     priceRange[0] > 0 ||
     priceRange[1] < 2000;
 
@@ -244,7 +311,14 @@ export function CategoryPage() {
   const clearFilters = () => {
     setSelectedFilterBrands([]);
     setSelectedSubcategory('Todos');
+    setSelectedSucursales([]);
     setPriceRange([0, 2000]);
+  };
+
+  const toggleSucursal = (sucursal: string) => {
+    setSelectedSucursales((prev) =>
+      prev.includes(sucursal) ? prev.filter((s) => s !== sucursal) : [...prev, sucursal]
+    );
   };
 
   const handleVehicleSearch = () => {
@@ -569,19 +643,19 @@ export function CategoryPage() {
               </div>
             </div>
 
-            {popularBrands.length > 0 && (
+            {sidebarBrands.length > 0 && (
               <div className="border-t border-border pt-5">
                 <h3 className="font-bold text-foreground mb-4">Marcas</h3>
                 <div className="space-y-3">
-                  {popularBrands.map((brand) => (
-                    <label key={brand.name} className="flex items-center gap-2.5 cursor-pointer group">
+                  {sidebarBrands.map((brand) => (
+                    <label key={brand} className="flex items-center gap-2.5 cursor-pointer group">
                       <input
                         type="checkbox"
-                        checked={selectedFilterBrands.includes(brand.name)}
-                        onChange={() => toggleFilterBrand(brand.name)}
+                        checked={selectedFilterBrands.includes(brand)}
+                        onChange={() => { toggleFilterBrand(brand); scrollToResults(); }}
                         className="w-4 h-4 rounded border-border text-primary accent-[var(--color-primary)]"
                       />
-                      <span className="text-sm text-foreground group-hover:text-primary transition-colors">{brand.name}</span>
+                      <span className="text-sm text-foreground group-hover:text-primary transition-colors">{brand}</span>
                     </label>
                   ))}
                 </div>
@@ -596,13 +670,44 @@ export function CategoryPage() {
                     <input
                       type="checkbox"
                       checked={selectedSubcategory === subcategory}
-                      onChange={() => setSelectedSubcategory(selectedSubcategory === subcategory ? 'Todos' : subcategory)}
+                      onChange={() => { setSelectedSubcategory(selectedSubcategory === subcategory ? 'Todos' : subcategory); scrollToResults(); }}
                       className="w-4 h-4 rounded border-border text-primary accent-[var(--color-primary)]"
                     />
                     <span className="text-sm text-foreground group-hover:text-primary transition-colors">{subcategory}</span>
                   </label>
                 ))}
               </div>
+            </div>
+
+            <div className="border-t border-border pt-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-foreground">Sucursales</h3>
+                {selectedSucursales.length > 0 && (
+                  <span className="text-xs font-bold bg-primary text-white rounded-full px-2 py-0.5">
+                    {selectedSucursales.length}
+                  </span>
+                )}
+              </div>
+              <div className="space-y-3">
+                {(sucursalesExpanded ? sucursales : sucursales.slice(0, 7)).map((sucursal) => (
+                  <label key={sucursal} className="flex items-center gap-2.5 cursor-pointer group">
+                    <input
+                      type="checkbox"
+                      checked={selectedSucursales.includes(sucursal)}
+                      onChange={() => { toggleSucursal(sucursal); scrollToResults(); }}
+                      className="w-4 h-4 rounded border-border text-primary accent-[var(--color-primary)]"
+                    />
+                    <span className="text-sm text-foreground group-hover:text-primary transition-colors">{sucursal}</span>
+                  </label>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSucursalesExpanded((v) => !v)}
+                className="mt-3 text-sm font-semibold text-primary hover:text-accent transition-colors flex items-center gap-1"
+              >
+                {sucursalesExpanded ? 'Ver menos ↑' : `Ver más (${sucursales.length - 7} más) ↓`}
+              </button>
             </div>
           </aside>
 

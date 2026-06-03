@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { Link } from 'react-router';
-import { Star } from 'lucide-react';
+import { Star, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { Product } from '../data/mockData';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { formatCurrency } from '../utils/currency';
+import { useCart } from '../context/CartContext';
+import correctSound from '../../assets/dragon-studio-correct-472358.mp3';
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +13,29 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const hasDiscount = product.discount && product.discount > 0;
+  const { addToCart } = useCart();
+  const [buttonState, setButtonState] = useState<'idle' | 'loading' | 'success'>('idle');
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (buttonState !== 'idle') return;
+    setButtonState('loading');
+    setTimeout(() => {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        code: product.code,
+        category: product.category,
+        brand: product.brand,
+      });
+      setButtonState('success');
+      new Audio(correctSound).play().catch(() => {});
+      setTimeout(() => setButtonState('idle'), 1200);
+    }, 700);
+  };
 
   return (
     <Link
@@ -89,8 +115,24 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
 
         {/* Add to cart button */}
-        <button className="w-full bg-primary text-primary-foreground py-3 rounded-xl font-bold hover:bg-primary/95 active:scale-[0.98] shadow-md shadow-primary/5 hover:shadow-lg hover:shadow-primary/10 transition-all duration-200 cursor-pointer">
-          Agregar al carrito
+        <button
+          onClick={handleAddToCart}
+          disabled={buttonState !== 'idle'}
+          className={`w-full py-3 rounded-xl font-bold shadow-md transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 active:scale-[0.98]
+            ${buttonState === 'success'
+              ? 'bg-green-500 text-white shadow-green-500/20'
+              : 'bg-primary text-primary-foreground hover:bg-primary/95 shadow-primary/5 hover:shadow-lg hover:shadow-primary/10'
+            }`}
+        >
+          {buttonState === 'idle' && (
+            <><ShoppingCart className="w-4 h-4" />Agregar al carrito</>
+          )}
+          {buttonState === 'loading' && (
+            <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />Agregando...</>
+          )}
+          {buttonState === 'success' && (
+            <><CheckCircle2 className="w-4 h-4" />¡Agregado!</>
+          )}
         </button>
       </div>
     </Link>

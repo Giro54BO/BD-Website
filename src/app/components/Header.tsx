@@ -2,7 +2,34 @@ import { Link, useNavigate } from "react-router";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, MapPin } from 'lucide-react';
+import { ArrowRight, ChevronDown, Eye, MapPin } from 'lucide-react';
+
+function normalize(value = '') {
+  return value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+const megaMenuSubcategories: Record<string, string[]> = {
+  autopartes: ['Frenos', 'Motor', 'Suspensión', 'Filtros', 'Transmisión', 'Encendido', 'Refrigeración'],
+  electronica: ['Computadoras', 'Electrodomésticos', 'Impresoras', 'Videojuegos', 'Parlantes', 'Celulares', 'Accesorios'],
+  moda: ['Calzado', 'Chaquetas', 'Mochilas', 'Accesorios', 'Deportivo'],
+  ferreteria: ['Herramientas eléctricas', 'Manuales', 'Tornillería', 'Pintura', 'Seguridad'],
+  hogar: ['Muebles', 'Iluminación', 'Cocina', 'Decoración', 'Organización'],
+};
+
+const megaMenuBrands: Record<string, string[]> = {
+  autopartes: ['Sinteplast', 'Tigre', 'Picasso', 'Voito KH', 'GPC', 'Makhartan'],
+  moda: ['Zara', 'Nike', 'Adidas', "Levi's", 'Puma', 'H&M'],
+  electronica: ['Apple', 'Samsung', 'Nintendo', 'HP', 'Sony', 'Lenovo'],
+  ferreteria: ['Stanley', 'Bosch', 'Makita', 'DeWalt', 'Truper', 'Black+Decker'],
+  hogar: ['KitchenAid', 'Oster', 'Philips', 'Mabe', 'Whirlpool', 'HomeLiving'],
+};
+
+const megaMenuSucursales = [
+  '2 de Agosto', 'Alto San Pedro', 'Arroyo Concepción', 'Casco Viejo',
+  'El Parí', 'El Torno', 'German Moreno', 'La Colorada', 'La Guardia',
+  'Los Lotes', 'Minero', 'Montero', 'Mutualista', 'Pampa de la Isla',
+  'Piraí', 'Plan 3000', 'San José', 'Satélite Norte', 'Villa 1º de Mayo', 'Yapacaní',
+];
 import svgPaths from "../../imports/svg-dzlm20prl5";
 import svgPathsMobile from "../../imports/svg-pmlra41f7y";
 import imgBigdamAzul1 from "figma:asset/618631a906a3f14879ebf268c012439e9a59550d.png";
@@ -25,15 +52,32 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [categoriesDropdownOpen, setCategoriesDropdownOpen] = useState(false);
+  const [selectedMegaCategory, setSelectedMegaCategory] = useState<string | null>(null);
+
+  // Default-select the first category whenever the mega menu opens
+  useEffect(() => {
+    if (categoriesDropdownOpen) {
+      setSelectedMegaCategory(prev => prev ?? (categories[0]?.id ?? null));
+    }
+  }, [categoriesDropdownOpen]);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const categoriesDropdownRef = useRef<HTMLDivElement>(null);
+  const cartButtonRef = useRef<HTMLAnchorElement>(null);
+  const mobileCartButtonRef = useRef<HTMLAnchorElement>(null);
   const prevItemCountRef = useRef(itemCount);
   const [badgeAnimKey, setBadgeAnimKey] = useState(0);
 
-  // Trigger slot-machine bounce whenever cart count increases
+  // Trigger badge bounce + button shake whenever cart count increases
   useEffect(() => {
     if (itemCount > prevItemCountRef.current) {
       setBadgeAnimKey(k => k + 1);
+      [cartButtonRef, mobileCartButtonRef].forEach(ref => {
+        const el = ref.current;
+        if (!el) return;
+        el.style.animation = 'none';
+        void el.offsetHeight; // force reflow to restart animation
+        el.style.animation = 'cartShake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both';
+      });
     }
     prevItemCountRef.current = itemCount;
   }, [itemCount]);
@@ -66,7 +110,18 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
   const handleCategoryClick = (categoryName: string) => {
     setSearchModalOpen(false);
     setCategoriesDropdownOpen(false);
+    setSelectedMegaCategory(null);
     navigate(getCategoryPath(categoryName));
+  };
+
+  const handleMegaMenuFilter = (
+    categoryName: string,
+    type: 'initialSubcategory' | 'initialBrand' | 'initialSucursal',
+    value: string
+  ) => {
+    setCategoriesDropdownOpen(false);
+    setSelectedMegaCategory(null);
+    navigate(getCategoryPath(categoryName), { state: { [type]: value } });
   };
 
   // Close open menus on ESC key
@@ -98,6 +153,7 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
         !categoriesDropdownRef.current.contains(event.target as Node)
       ) {
         setCategoriesDropdownOpen(false);
+        setSelectedMegaCategory(null);
       }
     };
 
@@ -196,6 +252,7 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
 
             {/* Cart Button */}
             <Link
+              ref={cartButtonRef}
               to="/cart"
               className="bg-card flex gap-1 h-[52px] items-center justify-center px-4 rounded-xl flex-shrink-0 hover:bg-muted transition-colors relative"
             >
@@ -275,54 +332,158 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
           </div>
         </div>
 
-        {categoriesDropdownOpen && (
-          <div className="absolute left-0 right-0 top-full z-[90] bg-background border-y border-border shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
-            <div className="max-w-[1440px] mx-auto px-8 lg:px-16 py-8">
-              <div className="mb-6">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-accent mb-2">
+        {categoriesDropdownOpen && (() => {
+          const activeCat = categories.find(c => c.id === selectedMegaCategory) ?? null;
+          const activeCatKey = activeCat ? normalize(activeCat.name) : '';
+          const activeSubs = megaMenuSubcategories[activeCatKey] ?? [];
+          const activeBrands = megaMenuBrands[activeCatKey] ?? [];
+
+          return (
+            <div className="absolute left-0 right-0 top-full z-[90] bg-background border-y border-border shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+              <div className="max-w-[1440px] mx-auto px-8 lg:px-16 pt-7 pb-8">
+                <div className="mb-5">
+                  <p className="text-xs font-bold uppercase tracking-widest text-accent mb-1">
                     Explora por negocio
                   </p>
-                  <h2 className="text-4xl font-bold text-primary leading-tight">
+                  <h2 className="text-3xl font-bold text-primary leading-tight">
                     Negocios
                   </h2>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-5 gap-5">
-                {categories.map((category) => (
+                {/* Category cards — selectable */}
+                <div className="grid grid-cols-6 gap-4">
+                  {categories.map((category) => {
+                    const isActive = selectedMegaCategory === category.id;
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={() => setSelectedMegaCategory(isActive ? null : category.id)}
+                        className={`group overflow-hidden rounded-xl border-2 bg-card text-left shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                          isActive
+                            ? 'border-primary ring-[3px] ring-primary/20 shadow-lg'
+                            : 'border-border hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5'
+                        }`}
+                      >
+                        <div
+                          className="h-[110px] overflow-hidden"
+                          style={{ background: category.gradient }}
+                        >
+                          <div className="w-full h-full flex items-center justify-center p-4">
+                            <ImageWithFallback
+                              src={categoryImages[category.id] || category.image}
+                              alt={category.name}
+                              className="max-h-[80px] w-full object-contain drop-shadow-lg transition-transform duration-300 group-hover:scale-105"
+                            />
+                          </div>
+                        </div>
+                        <div className={`px-4 py-3 flex items-center justify-between transition-colors ${isActive ? 'bg-primary/5' : ''}`}>
+                          <span className={`text-sm font-bold leading-snug transition-colors ${isActive ? 'text-primary' : 'text-foreground group-hover:text-primary'}`}>
+                            {getCategoryLabel(category.name)}
+                          </span>
+                          <ChevronDown className={`w-3.5 h-3.5 flex-shrink-0 transition-transform ${isActive ? 'rotate-180 text-primary' : 'text-muted-foreground'}`} />
+                        </div>
+                      </button>
+                    );
+                  })}
+
+                  {/* Ver todas las categorías card */}
                   <button
-                    key={category.id}
                     type="button"
-                    onClick={() => handleCategoryClick(category.name)}
-                    className="group overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    onClick={() => { setCategoriesDropdownOpen(false); setSelectedMegaCategory(null); navigate('/categorias'); }}
+                    className="group rounded-xl border-2 border-dashed border-border bg-white transition-all hover:border-primary hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary flex flex-col items-center justify-center gap-3 px-4 py-5"
+                    style={{ minHeight: 'calc(110px + 46px)' }}
                   >
-                    <div
-                      className="h-[190px] overflow-hidden"
-                      style={{ background: category.gradient }}
-                    >
-                      <div className="w-full h-full flex items-center justify-center p-6">
-                        <ImageWithFallback
-                          src={categoryImages[category.id] || category.image}
-                          alt={category.name}
-                          className="max-h-[150px] w-full object-contain drop-shadow-xl transition-transform duration-300 group-hover:scale-110"
-                        />
+                    <div className="w-14 h-14 rounded-full border border-border flex items-center justify-center bg-muted/40 group-hover:border-primary/50 group-hover:bg-primary/5 transition-colors">
+                      <Eye className="w-6 h-6 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                    <span className="text-sm font-semibold text-center leading-snug text-muted-foreground group-hover:text-primary transition-colors">
+                      Ver todas las categorías
+                    </span>
+                  </button>
+                </div>
+
+                {/* Hint below the card row */}
+                <p className="mt-3 text-xs text-muted-foreground">
+                  Selecciona una categoría para ver sus filtros
+                </p>
+
+                {/* Filter panel — appears below cards when a category is selected */}
+                {activeCat && (
+                  <div className="mt-5 border-t border-border pt-6 space-y-5 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-extrabold text-primary">
+                        {getCategoryLabel(activeCat.name)}
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => handleCategoryClick(activeCat.name)}
+                        className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-accent transition-colors"
+                      >
+                        Ver todo el catálogo <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* Subcategorías */}
+                    {activeSubs.length > 0 && (
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Subcategorías</p>
+                        <div className="flex flex-wrap gap-2">
+                          {activeSubs.map((sub) => (
+                            <button
+                              key={sub}
+                              type="button"
+                              onClick={() => handleMegaMenuFilter(activeCat.name, 'initialSubcategory', sub)}
+                              className="h-8 px-3.5 rounded-full border border-primary/60 text-sm font-semibold text-primary bg-white hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                            >
+                              {sub}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Marcas */}
+                    {activeBrands.length > 0 && (
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Marcas</p>
+                        <div className="flex flex-wrap gap-2">
+                          {activeBrands.map((brand) => (
+                            <button
+                              key={brand}
+                              type="button"
+                              onClick={() => handleMegaMenuFilter(activeCat.name, 'initialBrand', brand)}
+                              className="h-8 px-3.5 rounded-full border border-primary/60 text-sm font-semibold text-primary bg-white hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                            >
+                              {brand}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Sucursales */}
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Sucursales</p>
+                      <div className="flex flex-wrap gap-2">
+                        {megaMenuSucursales.map((sucursal) => (
+                          <button
+                            key={sucursal}
+                            type="button"
+                            onClick={() => handleMegaMenuFilter(activeCat.name, 'initialSucursal', sucursal)}
+                            className="h-8 px-3.5 rounded-full border border-primary/60 text-sm font-semibold text-primary bg-white hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                          >
+                            {sucursal}
+                          </button>
+                        ))}
                       </div>
                     </div>
-                    <div className="p-5">
-                      <span className="block text-xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
-                        {getCategoryLabel(category.name)}
-                      </span>
-                      <span className="mt-2 block text-sm font-medium text-muted-foreground">
-                        Ver catálogo
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       {/* Mobile Header */}
@@ -453,6 +614,7 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
 
         {/* Cart Icon */}
         <Link
+          ref={mobileCartButtonRef}
           to="/cart"
           className="w-4 h-4 flex-shrink-0 relative mr-4"
           aria-label="Carrito"
@@ -625,6 +787,16 @@ export function Header({ selectedCity, isLocationModalOpen = false, onOpenLocati
         55%  { transform: translateY(-25%) scale(1.15); opacity: 1; }
         80%  { transform: translateY(8%) scale(0.95); }
         100% { transform: translateY(0%) scale(1); opacity: 1; }
+      }
+      @keyframes cartShake {
+        0%   { transform: translateX(0) rotate(0deg); }
+        15%  { transform: translateX(-4px) rotate(-6deg); }
+        30%  { transform: translateX(4px) rotate(5deg); }
+        45%  { transform: translateX(-3px) rotate(-4deg); }
+        60%  { transform: translateX(3px) rotate(3deg); }
+        75%  { transform: translateX(-2px) rotate(-2deg); }
+        90%  { transform: translateX(1px) rotate(1deg); }
+        100% { transform: translateX(0) rotate(0deg); }
       }
     `}</style>
     </>

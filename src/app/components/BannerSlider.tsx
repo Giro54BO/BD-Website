@@ -33,8 +33,8 @@ const slides: BannerSlide[] = [
         alt: 'Protector solar en promoción',
       },
       {
-        image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=900&h=700&fit=crop&q=90',
-        alt: 'Conservadora azul para verano',
+        image: 'https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=900&h=700&fit=crop&q=90',
+        alt: 'Mujer aplicando crema cosmética',
       },
       {
         image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=700&h=460&fit=crop&q=90',

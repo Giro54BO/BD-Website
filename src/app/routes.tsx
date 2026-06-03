@@ -23,6 +23,8 @@ import { HelpCenterPage } from "./pages/HelpCenterPage";
 import { CategoryPage } from "./pages/CategoryPage";
 import { OffersPage } from "./pages/OffersPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { OrderConfirmationPage } from "./pages/OrderConfirmationPage";
+import { AllCategoriesPage } from "./pages/AllCategoriesPage";
 
 export const router = createBrowserRouter([
   {
@@ -118,6 +120,14 @@ export const router = createBrowserRouter([
       {
         path: "ofertas",
         Component: OffersPage,
+      },
+      {
+        path: "order-confirmation",
+        Component: OrderConfirmationPage,
+      },
+      {
+        path: "categorias",
+        Component: AllCategoriesPage,
       },
       {
         path: "*",

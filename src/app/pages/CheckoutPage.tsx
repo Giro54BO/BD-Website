@@ -10,6 +10,7 @@ export function CheckoutPage() {
   const category = searchParams.get('category');
   const { items, clearCart, clearCartByCategory } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'qr'>('card');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Filter items by category for this checkout
   const checkoutItems = useMemo(() => {
@@ -20,6 +21,31 @@ export function CheckoutPage() {
   const cartTotal = useMemo(() => {
     return checkoutItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   }, [checkoutItems]);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const VALID_COUPONS: Record<string, number> = {
+    DESCUENTO10: 0.10,
+    DESCUENTO20: 0.20,
+    BIENVENIDO: 0.15,
+  };
+
+  const discountAmount = appliedCoupon ? cartTotal * appliedCoupon.discount : 0;
+  const finalTotal = cartTotal - discountAmount;
+
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    if (VALID_COUPONS[code]) {
+      setAppliedCoupon({ code, discount: VALID_COUPONS[code] });
+      setCouponError(null);
+    } else {
+      setAppliedCoupon(null);
+      setCouponError('Cupón inválido o expirado.');
+    }
+  };
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -32,12 +58,12 @@ export function CheckoutPage() {
     cardCVV: '',
   });
 
-  // Redirect to cart if no items or invalid category
+  // Redirect to cart if no items or invalid category (skip while submitting)
   useEffect(() => {
-    if (items.length === 0 || checkoutItems.length === 0) {
+    if (!isSubmitting && (items.length === 0 || checkoutItems.length === 0)) {
       navigate('/cart');
     }
-  }, [items.length, checkoutItems.length, navigate]);
+  }, [items.length, checkoutItems.length, navigate, isSubmitting]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -48,33 +74,37 @@ export function CheckoutPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Simulate order processing
-    alert(`¡Pedido realizado con éxito para ${category || 'tu compra'}!`);
+    setTimeout(() => {
+      const orderNumber = `BD-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999) + 1).padStart(5, '0')}`;
 
-    // Remove only the items from this category
-    if (category) {
-      clearCartByCategory(category);
-      // Check if there are more items in cart
-      const remainingItems = items.filter(item => (item.category || 'Sin categoría') !== category);
-      if (remainingItems.length > 0) {
-        navigate('/cart');
+      if (category) {
+        clearCartByCategory(category);
       } else {
-        navigate('/');
+        clearCart();
       }
-    } else {
-      clearCart();
-      navigate('/');
-    }
+
+      navigate('/order-confirmation', { state: { orderNumber } });
+    }, 1800);
   };
 
-  // Show nothing while redirecting
-  if (items.length === 0 || checkoutItems.length === 0) {
+  // Show nothing while redirecting (only when not in the middle of submitting)
+  if (!isSubmitting && (items.length === 0 || checkoutItems.length === 0)) {
     return null;
   }
 
   return (
     <div className="max-w-[1440px] mx-auto px-8 lg:px-16 py-8">
+
+      {/* Processing overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-background/80 backdrop-blur-sm">
+          <div className="w-14 h-14 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+          <p className="text-lg font-semibold text-foreground">Procesando tu pedido...</p>
+        </div>
+      )}
+
       {/* Back to cart */}
       <Link to="/cart" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6">
         <ChevronLeft className="w-5 h-5" />
@@ -309,6 +339,37 @@ export function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Coupon */}
+              <div className="border-t border-border pt-4 mb-4">
+                <p className="text-sm font-semibold text-foreground mb-3">Código de descuento</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={couponCode}
+                    onChange={(e) => { setCouponCode(e.target.value); setCouponError(null); }}
+                    onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleApplyCoupon())}
+                    placeholder="Código de descuento"
+                    disabled={!!appliedCoupon}
+                    className="flex-1 px-4 py-3 bg-input-background border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                  />
+                  <button
+                    type="button"
+                    onClick={appliedCoupon ? () => { setAppliedCoupon(null); setCouponCode(''); } : handleApplyCoupon}
+                    className="px-4 py-3 border border-primary text-primary rounded-xl text-sm font-medium hover:bg-primary/5 transition-colors whitespace-nowrap"
+                  >
+                    {appliedCoupon ? 'Quitar' : 'Aplicar →'}
+                  </button>
+                </div>
+                {couponError && (
+                  <p className="text-sm text-destructive mt-2">{couponError}</p>
+                )}
+                {appliedCoupon && (
+                  <p className="text-sm text-green-600 mt-2">
+                    Cupón <span className="font-semibold">{appliedCoupon.code}</span> aplicado — {Math.round(appliedCoupon.discount * 100)}% de descuento
+                  </p>
+                )}
+              </div>
+
               <div className="space-y-3 border-t border-border pt-4 mb-6">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
@@ -316,6 +377,14 @@ export function CheckoutPage() {
                     ${cartTotal.toFixed(2)}
                   </span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Descuento</span>
+                    <span className="font-medium text-green-600">
+                      -${discountAmount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Envío</span>
                   <span className="font-medium text-foreground">Gratis</span>
@@ -324,7 +393,7 @@ export function CheckoutPage() {
                   <div className="flex justify-between">
                     <span className="text-lg font-bold text-foreground">Total</span>
                     <span className="text-2xl font-bold text-foreground">
-                      ${cartTotal.toFixed(2)}
+                      ${finalTotal.toFixed(2)}
                     </span>
                   </div>
                 </div>

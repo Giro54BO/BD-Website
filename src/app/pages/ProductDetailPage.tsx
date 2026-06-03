@@ -5,6 +5,7 @@ import { products } from '../data/mockData';
 import { Star, Truck, Shield, RotateCcw, ShoppingCart, Minus, Plus, CheckCircle2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import correctSound from '../../assets/dragon-studio-correct-472358.mp3';
 
 export function ProductDetailPage() {
   const { id } = useParams();
@@ -48,6 +49,7 @@ export function ProductDetailPage() {
         brand: product.brand,
       }, quantity);
       setButtonState('success');
+      new Audio(correctSound).play().catch(() => {});
       setTimeout(() => setButtonState('idle'), 1200);
     }, 700);
   };

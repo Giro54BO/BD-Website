@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import { TopBanner } from '../components/TopBanner';
 import { Header } from '../components/Header';
 import { SecondaryNav } from '../components/SecondaryNav';
@@ -8,8 +8,13 @@ import { WhatsAppButton } from '../components/WhatsAppButton';
 import { CitySelectionModal } from '../components/CitySelectionModal';
 
 export function RootLayout() {
+  const { pathname } = useLocation();
   const [selectedCity, setSelectedCity] = useState<string>('');
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
 
   useEffect(() => {
     const savedCity = localStorage.getItem('bigdam_selected_city');
